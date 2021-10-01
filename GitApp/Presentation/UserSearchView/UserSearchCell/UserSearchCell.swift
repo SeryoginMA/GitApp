@@ -13,26 +13,26 @@ final class UserSearchCell: UITableViewCell {
     @IBOutlet weak var userNameLabel: UILabel!
     @IBOutlet weak var userFollowersLabel: UILabel!
     
+    private let userInfoProvider: UserInfoProviderProtocol = UserInfoProvider()
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
+    override func prepareForReuse() {
+        userAvatarImageView.image = nil
+    }
 }
 
-extension UserSearchCell{
-    func setUp(user: User) {
-        userNameLabel.text = user.login
+extension UserSearchCell {
+    func setUp(user: User?) {
+        userNameLabel.text = user?.login
+        userInfoProvider.loadImage(with: user!.avatarUrl){ image in
+            self.userAvatarImageView.image = image
+        }
         
-//        userAvatarImageView.image = user.avatarUrl
-//        userFollowersLabel.text = user.followersUrl
-    
+        userInfoProvider.loadFollowersCount(with: user!.followersUrl){ followersCount in
+            self.userFollowersLabel.text = String(followersCount)
+        }
     }
 }

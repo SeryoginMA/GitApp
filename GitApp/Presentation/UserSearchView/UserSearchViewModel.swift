@@ -8,33 +8,20 @@
 import Foundation
 
 protocol UserSearchViewModelProtocol {
-    func loadData(query: String)
-//    func getCitiesFromFavorite()
+    func loadData(query: String, completion: @escaping ([User]) -> Void)
     var users: [User] { get }
-
 }
 
 final class UserSearchViewModel: UserSearchViewModelProtocol {
     
-    private let weatherProvider: UserProviderProtocol = UserProvider()
-//    private let citiesProvider: CitiesProviderProtocol = CitiesProvider()
+    private let userProvider: UserProviderProtocol = UserProvider()
 
     private(set) var users: [User] = []
 
-   
-    
-    
-//    func getCitiesFromFavorite() {
-//
-//        cities = self.citiesProvider.getCities()
-//    }
-//
-    func loadData(query: String) {
-        print("qweqwe")
-        weatherProvider.loadData(query: query) { users in
-            print("asdasdasdasdas", users)
+    func loadData(query: String, completion: @escaping ([User]) -> Void) {
+        userProvider.loadData(query: query) { users in
             self.users = users
-            NotificationCenter.default.post(name: Notification.Name("NewCityAdded"), object: nil)
+            completion(users)
         }
     }
 
