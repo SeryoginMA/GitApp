@@ -10,10 +10,9 @@ import UIKit
 class UserSearchViewController: UIViewController,UISearchBarDelegate {
     
     private let viewModel: UserSearchViewModelProtocol
-    @IBOutlet weak var searchBar: UISearchBar!
-    
     private var users: [User] = []
     
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var userTableView: UITableView!
     
     override func viewDidLoad() {
@@ -38,29 +37,41 @@ class UserSearchViewController: UIViewController,UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text{
             if text != ""{
-                print("ASASDASD")
                 setTableView(query: text)
             }
         }
     }
     
     private func setTableView(query: String){
-        viewModel.loadData(query: query){ [weak self] users in
+        viewModel.getUsers(query: query){ [weak self] users in
             self?.users = users
             self?.userTableView.reloadData()
         }
+    }
+    
+    func goToRepos(reposUrl: String, userName: String){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let secondViewController = storyboard.instantiateViewController(identifier: "ReposViewController") as? ReposViewController else { return }
+        secondViewController.reposUrl = reposUrl
+        secondViewController.userName = userName
+        show(secondViewController, sender: nil)
     }
 }
 
 extension UserSearchViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.users.count
+        return users.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserSearchCell", for: indexPath) as! UserSearchCell
-        cell.setUp(user: viewModel.users[indexPath.row])
+        cell.setUp(user: users[indexPath.row])
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let user = users[indexPath.row]
+        goToRepos(reposUrl: user.reposUrl, userName: user.login)
     }
 }
 

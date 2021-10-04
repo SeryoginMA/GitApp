@@ -26,13 +26,15 @@ final class UserSearchCell: UITableViewCell {
 
 extension UserSearchCell {
     func setUp(user: User?) {
+        
+        
         userNameLabel.text = user?.login
         userInfoProvider.loadImage(with: user!.avatarUrl){ image in
             self.userAvatarImageView.image = image
         }
         
         userInfoProvider.loadFollowersCount(with: user!.followersUrl){ followersCount in
-            self.userFollowersLabel.text = String(followersCount)
+            self.userFollowersLabel.text = "followers: \(followersCount)"
         }
     }
 }
